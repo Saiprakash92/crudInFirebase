@@ -1,0 +1,145 @@
+link to pedro's githb repo : https://github.com/machadop1407/react-firebase-blog-website/tree/main/src/pages
+
+create a new project in firebse website
+set firestore
+set authentication
+create a collection in firestore
+firestore rules change read and write permission
+------------------------------------------------
+go to  react application 
+npm install firebase
+create a file for firebase config
+
+Firebase-config.js
+-----------------
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
+const firebaseConfig = {
+  apiKey: "AIzaSyDc7PJ9309GQRO0v2-mCUhBIWpOAnNyec8", 
+  authDomain: "blogproject-92aa7.firebaseapp.com",                //firebase config is copied from firebase project website
+  projectId: "blogproject-92aa7",
+  storageBucket: "blogproject-92aa7.appspot.com",
+  messagingSenderId: "135318509256",
+  appId: "1:135318509256:web:034fab8084a0ad39e3b7fd",
+};
+
+
+const app = initializeApp(firebaseConfig);
+
+export const db = getFirestore(app);
+export const auth = getAuth(app);
+export const provider = new GoogleAuthProvider(); //this is for login with gmail id
+
+*********************************************************************************
+Login.js
+-------
+import { auth, provider } from "../firebase-config";
+import { signInWithPopup } from "firebase/auth";
+---------------------------------------------------
+const [isAuth,setIsAuth]=useState(localstorage.getitem('isAuth'))
+
+ const signInWithGoogle = () => {
+    signInWithPopup(auth, provider).then((result) => {
+      localStorage.setItem("isAuth", true);
+      setIsAuth(true);
+      navigate("/");
+    });
+  }
+  ----------------------------------------
+<button onClick={signInWithGoogle}>
+sign in with google
+</button>
+---------------------
+
+#  sign out function
+import {signOut} from 'firebase/auth'
+
+const userSignOut =()=>{
+   signOut(auth).then(
+   ()=> { localstorage.cear()
+        setIsAuth(false)
+        window.location('login')
+        }
+   )}
+*****************************************************
+create a post
+-----------
+
+import {addDoc,collection} from firebase/firestore}
+import {db,auth} from '../firebase-config
+        ------------
+const [post,setPost]=useState('')
+cont postCollectionRef=collection(db,'posts')    'posts' is the name of the collection  created mannually at beginning  in firebse firesore website.
+const createPOst=async()=>
+   {
+       await addDoc(postCollectionRef,
+                 {
+                   post, author:{name:auth.currentuser.displayname,id:auth.currentuser.uid}
+                 })
+   }
+   
+             ---------------------------------------
+             
+           <input onChange=
+                  {
+                    (e)=>{setPost(e.target.value)}
+                  } />
+                  
+             <button 
+             onClick={createPost}
+             > submit post</button>
+***********************************************************************************************
+
+  # getPost
+     ----
+ import { getDocs, collection, deleteDoc, doc } from "firebase/firestore";
+ import { auth, db } from "../firebase-config";
+-------------------------------------------------------
+ const [postLists, setPostList] = useState([]);
+  const postsCollectionRef = collection(db, "posts");
+  
+   useEffect(() => {
+    const getPosts = async () => {
+      const data = await getDocs(postsCollectionRef);
+      setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    };
+
+    getPosts();
+  }, [deletePost]);
+  
+   const deletePost = async (id) => {
+    const postDoc = doc(db, "posts", id);
+    await deleteDoc(postDoc);
+  };
+  ------------------------------------------
+  
+  {postList.map((obj)=>
+         {
+         return(
+            <div>
+            {obj.post}
+            {obj.author.name}
+            
+             {isAuth && post.author.id === auth.currentUser.uid && (
+                  <button
+                    onClick={() => {
+                      deletePost(post.id);
+                    }}
+                  >
+                   delete post
+                  </button>
+                )}
+            </div>
+               )
+               }
+  
+  
+  
+  
+  
+  
+
+
+
+
